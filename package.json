@@ -7,7 +7,8 @@
     "start": "nodemon app.ts",
     "prestart": "npm run build",
     "typecheck": "tsc --noEmit",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
