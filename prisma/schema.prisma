@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id          Int          @id @default(autoincrement())
+  username    String       @unique
+  email       String       @unique
+  phoneNumber Int
+  password    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  permissions Permission[] // One-to-many relationship with Admin permissions
+  deletedAt   DateTime? // Optional deletion date
+}
+
+model Permission {
+  id      Int    @id @default(autoincrement())
+  name    String
+  admin   Admin  @relation(fields: [adminId], references: [id]) // Relationship to the admin associated with this permission
+  adminId Int // ID of the admin associated with this permission
+}
+
+model Student {
+  id           Int                 @id @default(autoincrement())
+  name         String
+  phoneNumber  Int
+  academicYear Int
+  email        String
+  parent       Parent              @relation(fields: [parentId], references: [id])
+  parentId     Int
+  image        String
+  password     String
+  confPassword String
+  createdAt    DateTime            @default(now())
+  deletedAt    DateTime?
+  updatedAt    DateTime            @updatedAt
+  city         City                @relation(fields: [cityId], references: [id])
+  cityId       Int
+  country      Country             @relation(fields: [countryId], references: [id])
+  countryId    Int
+  categories   Category[]
+  assignments  StudentAssignment[]
+  typelan      String 
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  students  Student[]
+}
+
+model Country {
+  id          Int       @id @default(autoincrement())
+  countryName String
+  cities      City[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  students    Student[]
+}
+
+model City {
+  id        Int       @id @default(autoincrement())
+  cityName  String
+  country   Country   @relation(fields: [countryId], references: [id])
+  countryId Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  students  Student[]
+}
+
+model Parent {
+  id          Int       @id @default(autoincrement())
+  name        String
+  phoneNumber Int
+  students    Student[]
+}
+
+model Teacher {
+  id           Int          @id @default(autoincrement())
+  name         String
+  email        String       @unique
+  password     String
+  phoneNumber  Int
+  confPassword String
+  curriculums  Curriculum[]
+  lessons      Lesson[]
+  liveClasses  LiveClass[]
+}
+
+model Curriculum {
+  id        Int       @id @default(autoincrement())
+  name      String
+  image     String
+  subjects  Subject[]
+  teacher   Teacher   @relation(fields: [teacherId], references: [id])
+  teacherId Int
+}
+
+model Subject {
+  id           Int        @id @default(autoincrement())
+  name         String
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+  curriculumId Int
+  lessons      Lesson[]
+}
+
+model Lesson {
+  id          Int          @id @default(autoincrement())
+  title       String
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  subjectId   Int
+  videos      Video[]
+  assignments Assignment[]
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  teacherId   Int
+}
+
+model Video {
+  id       Int    @id @default(autoincrement())
+  url      String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  lessonId Int
+  views    Int
+}
+
+model Assignment {
+  id                 Int                 @id @default(autoincrement())
+  question           String
+  lesson             Lesson              @relation(fields: [lessonId], references: [id])
+  lessonId           Int
+  answersTrue        String
+  studentAssignments StudentAssignment[]
+}
+
+model StudentAssignment {
+  id           Int        @id @default(autoincrement())
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    Int
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId Int
+  score        Int
+}
+
+model LiveClass {
+  id          Int      @id @default(autoincrement())
+  name        String
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  teacherId   Int
+  startTime   DateTime
+  endTime     DateTime
+  cost        Float
+  description String
+  status      String
+  url         String
+}

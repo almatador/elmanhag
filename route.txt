@@ -1,0 +1,170 @@
+http://localhost:3000/Country/countries
+استدعاء جميع البلاد
+
+http://localhost:3000/Country/countries/3/createcities
+انشاء مدينة
+{
+  "cityName": "اسكندرية"
+}
+
+http://localhost:3000/Country/createcountries
+انشاء بلد
+{
+  "countryName": "مصر"
+}
+http://localhost:3000/Country/countries/"id"
+استرجاع البلاد من خلال الId
+
+
+http://localhost:3000/Country/countriesupdeta
+تعديل البلد 
+{
+  "id": 3,
+  "countryName": "hs;k]vdm"
+}
+http://localhost:3000/Country/countries/3/cities
+استرجاع مدن البلد بستخدام id البلد
+
+http://localhost:3000/Country/countries/3/createcities
+// إنشاء مدينة جديدة وربطها ببلد
+{
+ "cityName": "يبيبيبري"
+}
+http://localhost:3000/Country/deletecountries/1
+حذف بلد من خلال الId
+
+http://localhost:3000/Country/getcountriesandcities
+لاسترجاع البلد مع المدن
+http://localhost:3000/student/signin
+لتسجيل الطالب
+{
+  "name": "Student Name",
+  "phone_number": 123456789,
+  "countryId": 3,
+  "academic_year": 2023,
+  "email": "student@example.com",
+  "parentisName": "Parent Name",
+  "parentisPhone": 987654321,
+  "password": "password123",
+  "confPassword": "password123",
+  "cityId": 3
+  "typelan": "arabic",
+  "image" : url
+
+}
+http://localhost:3000/student/login
+لتسجيل دخول الطالب
+{
+  "email": "student@example.com",
+  "password": "password123"
+}
+
+http://localhost:3000/student/delete/2
+مسح الطالب
+http://localhost:3000/teacher/createTeacher
+انشاء مدرس
+
+{
+  "name": "Matador",
+  "email": "student@example.com",
+  "phoneNumber": 123456789,
+  "password": "securePassword123",
+  "confPassword": "securePassword123"
+}
+http://localhost:3000/teacher/loginTeacher
+تسجيل دخول المدرس
+{
+  "email": "student@example.com",
+  "password": "securePassword123"
+}
+http://localhost:3000/teacher/deleteTeacher/:1
+حذف المعلم
+
+http://localhost:3000/curriculum/creataSupject
+انشاء وحدات المادة 
+{
+  "name": "Math Curriculum",
+   "curriculumId": 2
+
+}
+http://localhost:3000/curriculum/1
+استدعاءالمادة ب id
+http://localhost:3000/curriculum/1
+تعديل المادة ب id
+http://localhost:3000/curriculum/1
+حذف المادة ب id
+http://localhost:3000/curriculum/subject/2
+استرجاع وحدات المادة ب id
+http://localhost:3000/curriculum/subject/2
+تعديل وحدات المادة
+http://localhost:3000/curriculum/subject/2
+مسح وحدات المادة
+http://localhost:3000/curriculum/2/subjects
+استدعاء كل الوحدات الخاصة بكل مادة
+http://localhost:3000/lesson/lesson/create
+انشاء درس جديد 
+{
+  title: title,
+  subjectId: subjectId,
+  teacherId: teacherId,
+}
+http://localhost:3000/lesson/lesson/update/2
+تعديل درس ب id
+http://localhost:3000/lesson/lesson/delete/2
+مسح الدرس ب id
+http://localhost:3000/video/lesson/2/video/create
+نشر فيديو في درس من خلال id الدرس
+{
+  url,
+  views: views || 0,
+  lesson: lessonid
+}
+http://localhost:3000/video/lesson/2/videos
+استدعاء فيديوهات الدرس من خلال id الدرس
+http://localhost:3000/video/video/:id
+استدعاء الفيديو من خلال id لفيديو
+
+http://localhost:3000/video/video/update/2
+تعديل الفيديو من الId
+http://localhost:3000/video /video/delete/2
+مسح الفيديو من خلال id
+
+http://localhost:3000/live/createLiveClass
+نشر للايف 
+{
+  name,
+  teacherId,
+  startTime,
+  endTime,
+  cost,
+  description,
+  status,
+  url
+}
+http://localhost:3000/live/createLiveClass
+استدعاء اللايفات
+http://localhost:3000/live/updateLiveClass/1
+تعديلاللايف  من خلال id
+http://localhost:3000/live/deleteLiveClass/2
+مسح اللايف من خلال id
+http://localhost:3000/admin/login
+{
+  "email": "student@example.com",
+  "password": "password123"
+}
+http://localhost:3000/admin/signup
+تسجيل الادمن
+{
+  email: email,
+  password: ,
+  username: name,
+  phoneNumber: phoneNumber
+}
+http://localhost:3000/admin/getalladmin
+استدعاءالادمن
+
+
+
+
+
+ 
