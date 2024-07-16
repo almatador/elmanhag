@@ -29,8 +29,8 @@ model Permission {
 model Student {
   id           Int                 @id @default(autoincrement())
   name         String
-  phoneNumber  Int
-  academicYear Int
+  phoneNumber  String
+  academicYear String
   email        String
   parent       Parent              @relation(fields: [parentId], references: [id])
   parentId     Int
@@ -47,6 +47,14 @@ model Student {
   categories   Category[]
   assignments  StudentAssignment[]
   typelan      String 
+  secretKey   secretKey[] 
+}
+model secretKey{
+  id           Int                 @id @default(autoincrement())
+  Student  Student @relation(fields: [studentId],references: [id])
+  studentId Int
+
+  token  String
 }
 
 model Category {

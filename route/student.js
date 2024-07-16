@@ -15,8 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const client_1 = require("@prisma/client");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const StudentRoutes = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
+const generateSecretKey = () => {
+    return require('crypto').randomBytes(64).toString('hex');
+};``
 StudentRoutes.get('/getstudent', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const students = yield prisma.student.findMany({
@@ -86,29 +90,80 @@ StudentRoutes.delete('/delete/:id', (req, res) => __awaiter(void 0, void 0, void
         res.status(500).send('حدث مشكلة في السيرفر');
     }
 }));
-StudentRoutes.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const authenticateStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).send('الرجاء تقديم البريد الإلكتروني وكلمة المرور');
     }
     try {
         const student = yield prisma.student.findFirstOrThrow({
-            where: {
-                email: email,
-            },
+            where: { email },
         });
-        if (student && bcrypt_1.default.compareSync(password, student.password)) {
-            res.status(200).send(student);
+        if (!student || !bcrypt_1.default.compareSync(password, student.password)) {
+            return res.status(404).send('الايميل او كلمة المرور خطأ');
         }
-        else {
-            res.status(404).send('الايميل او كلمة المرور خطأ');
-        }
+        req.body.student = student; // إضافة الطالب إلى كائن الطلب للاستخدام في الوظائف اللاحقة
     }
     catch (error) {
         console.error('Login error:', error);
         res.status(500).send('حدث مشكلة في السيرفر');
     }
+});
+// Middleware لتوليد وتحديث الـ secretKey
+const updateSecretKey = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newSecretKey = require('crypto').randomBytes(64).toString('hex');
+    try {
+        yield prisma.student.update({
+            where: { id: req.body.student.id },
+            data: { secretKey: newSecretKey },
+        });
+        const token = jsonwebtoken_1.default.sign({ id: req.body.student.id }, newSecretKey, { expiresIn: '24h' });
+        req.body.token = token;
+    }
+    catch (error) {
+        console.error('Error updating secret key:', error);
+        res.status(500).send('حدثت مشكلة في السيرفر');
+    }
+});
+// Middleware للتحقق من الطالب المسجل في الطلب
+const checkAuthenticated = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).send('تحقق غير مصرح به');
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, req.body.token);
+        req.body.studentId = decoded;
+    }
+    catch (error) {
+        console.error('Token verification failed:', error);
+        res.status(401).send('تحقق غير مصرح به');
+    }
+});
+StudentRoutes.post('/login', authenticateStudent, updateSecretKey, (req, res) => {
+    res.status(200).send({ student: req.body.student, token: req.body.token });
+    console.log(req.body.token);
+});
+// Route لتسجيل الخروج
+StudentRoutes.delete('/logout/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params; // Assuming id is passed as a route parameter
+    try {
+        // Find and delete the student's secret key record
+        const deletedSecretKey = yield prisma.secretKey.deleteMany({
+            where: { studentId: parseInt(id) },
+        });
+        if (!deletedSecretKey.count || deletedSecretKey.count === 0) {
+            return res.status(404).send('Secret key not found for the student.');
+        }
+        res.status(200).send('Logged out successfully.');
+    }
+    catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).send('An error occurred while logging out.');
+    }
 }));
+// Route لإنشاء حساب جديد
 StudentRoutes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, phoneNumber, countryId, academicYear, email, parentisName, parentisPhone, password, confPassword, cityId, image, typelan } = req.body;
     // Check for required fields
@@ -151,22 +206,31 @@ StudentRoutes.post('/signin', (req, res) => __awaiter(void 0, void 0, void 0, fu
                 confPassword: hashedPassword, // Store hashed password
                 cityId: cityId, // Assuming there's a CityId field, set it accordingly
                 image: image,
-                typelan: typelan
+                typelan: typelan,
+                secretKey: {
+                    create: [
+                        { token: generateSecretKey() } // Generate and include secret key
+                    ]
+                }
             },
+            include: {
+                secretKey: true // Include secret keys in the response if needed
+            }
         });
-        res.status(200).send(student);
+        res.status(200).json(student);
     }
     catch (error) {
         console.error('Signup error:', error);
-        res.status(500).send('حدث مشكلة في السيرفر');
+        res.status(500).send('Server error occurred');
     }
 }));
+// Route لتحديث معلومات الطالب
 StudentRoutes.put('/updateuser/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
         const { name, email, phoneNumber, password } = req.body;
         if (id.length !== 24) {
-            return res.status(400).send('Invalid ID');
+            return res.status(400).send('معرف غير صالح');
         }
         if (password) {
             const hashedPassword = yield bcrypt_1.default.hash(password, 10);
@@ -194,11 +258,11 @@ StudentRoutes.put('/updateuser/:id', (req, res) => __awaiter(void 0, void 0, voi
                 },
             });
         }
-        res.status(200).send('student updated');
+        res.status(200).send('تم تحديث الطالب بنجاح');
     }
     catch (error) {
         console.error(error);
-        res.status(500).send(`Error on updating student ERROR: ${error}`);
+        res.status(500).send(`خطأ في تحديث الطالب ERROR: ${error}`);
     }
 }));
 exports.default = StudentRoutes;
