@@ -275,7 +275,7 @@ StudentRoutes.put('/updateuser/:id', async (req: Request, res: Response) => {
         data: {
           name: name,
           email: email,
-          phoneNumber: parseInt(phoneNumber),
+          phoneNumber: phoneNumber,
           password: hashedPassword,
         },
       });
@@ -287,7 +287,7 @@ StudentRoutes.put('/updateuser/:id', async (req: Request, res: Response) => {
         data: {
           name: name,
           email: email,
-          phoneNumber: parseInt(phoneNumber),
+          phoneNumber: phoneNumber,
         },
       });
     }
