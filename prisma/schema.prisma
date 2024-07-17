@@ -26,10 +26,11 @@ model Permission {
   adminId Int // ID of the admin associated with this permission
 }
 
+
 model Student {
   id           Int                 @id @default(autoincrement())
   name         String
-  phoneNumber  String
+  phoneNumber  String              // Ensure phoneNumber is a String
   academicYear String
   email        String
   parent       Parent              @relation(fields: [parentId], references: [id])
@@ -47,16 +48,15 @@ model Student {
   categories   Category[]
   assignments  StudentAssignment[]
   typelan      String 
-  secretKey   secretKey[] 
+  secretKey    SecretKey[]         // Corrected relationship type
 }
-model secretKey{
-  id           Int                 @id @default(autoincrement())
-  Student  Student @relation(fields: [studentId],references: [id])
+
+model SecretKey {
+  id        Int     @id @default(autoincrement())
+  student   Student @relation(fields: [studentId], references: [id])
   studentId Int
-
-  token  String
+  token     String
 }
-
 model Category {
   id        Int       @id @default(autoincrement())
   name      String
@@ -87,7 +87,7 @@ model City {
 model Parent {
   id          Int       @id @default(autoincrement())
   name        String
-  phoneNumber Int
+  phoneNumber String
   students    Student[]
 }
 
