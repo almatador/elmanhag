@@ -8,6 +8,7 @@
     "prestart": "npm run build",
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
+    "migrate": "prisma migrate",
     "build": "tsc"
   },
   "author": "",
