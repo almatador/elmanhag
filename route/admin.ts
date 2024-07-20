@@ -1,8 +1,7 @@
 import express from 'express';
 import bcrypt from "bcrypt";
-import { PrismaClient } from '@prisma/client'
+import prisma from '../date/sql';
 const admin = express.Router();
-const prisma = new PrismaClient();
 
 admin.post("/login", async (req, res) => {
   const { email, password } = req.body;
