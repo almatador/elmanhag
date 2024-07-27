@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "migrate": "prisma migrate",
-    "build": "tsc"
+    "build": "tsc --project tsconfig.json"
   },
   "author": "",
   "license": "ISC",
