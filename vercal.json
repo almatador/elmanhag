@@ -14,13 +14,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "dist/server.js"
-        }
-    ],
-    "crons": [
-        {
-            "path": "/api/cron",
-            "schedule": "0 0 * * *"
+            "dest": "dist/app.js"
         }
     ]
 }
