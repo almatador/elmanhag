@@ -10,8 +10,10 @@ import lessonRoutes from './route/lesson'
 import StudentreitRouters from './route/studentreit';
 import videioRoutes from './route/video';
 import liveRoutes from './route/live';
+import path from 'path';
 const app = express();
 const port = 3000;
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());  
